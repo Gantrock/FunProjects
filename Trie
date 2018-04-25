@@ -1,1 +1,43 @@
+public class Trie {
 
+  private class TrieNode {
+    HashMap<Character, TrieNode> characters = new HashMap<Character, TrieNode>();
+    public int size;
+    private boolean isWord;
+    
+    public void addChild(char ch) {
+        children.putIfAbsent(ch, new TrieNode());        
+    }
+    
+    public TrieNode getChild(char ch) {
+        return children.get(ch);
+    }
+    
+    private void setIsWord(boolean theWord) {
+        isWord = theWord;
+    }
+}
+class Trie {
+    TrieNode root = new TrieNode();
+    
+    Trie() {}
+    
+    Trie(String[] words) {
+        for(String word : words) {
+            add(word);
+        }
+    }
+    public void add(String word) {
+        TrieNode curr = root;
+        for(int i = 0; i < word.length(); i++) {
+            char ch = word.charAt(i);
+            curr.addChild(ch);
+            curr = curr.getChild(ch);
+            curr.size++;            
+        }
+    }
+    public boolean find(String word) {
+        
+    }
+  }
+}
