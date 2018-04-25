@@ -66,5 +66,34 @@ class Trie {
         }
             return curr.getIsWord();
     }
+    
+    public void delete(String word) {
+        delete(root, word, 0);
+    }
+    
+    public boolean delete(TrieNode theNode, String word, int ind) {
+    char ch = ' ';
+    TrieNode nextNode;
+    boolean shouldDelete = false;
+        if(index == word.length()) {
+            if(!theNode.getIsWord()) {
+                return false;
+            }
+            theNode.setIsWord = false;
+            return true;
+        }
+        ch = word.charAt(ind);
+        nextNode = theNode.getChild(ch);
+        if(tempNode == null) {
+            return false;
+        }
+        shouldDelete = delete(nextNode, word, ind+1);
+        
+        if(shouldDelete) {
+            nextNode.getChild(ch).characters.remove();
+            return true;
+        }
+        return false;
+    }
   }
 }
