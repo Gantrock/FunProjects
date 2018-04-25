@@ -2,7 +2,7 @@ public class Trie {
 
   private class TrieNode {
     HashMap<Character, TrieNode> characters = new HashMap<Character, TrieNode>();
-    public int size;
+    private int size;
     private boolean isWord;
     
     public void addChild(char ch) {
@@ -13,8 +13,24 @@ public class Trie {
         return children.get(ch);
     }
     
+    private void setSize(int theSize) {
+        size = theSize;
+    }
+    
+    private void incSize() {
+        size++;
+    }
+    
+    private int getSize() {
+        return size;
+    }
+    
     private void setIsWord(boolean theWord) {
         isWord = theWord;
+    }
+    
+    private boolean getIsWord() {
+        return isWord;
     }
 }
 class Trie {
@@ -33,11 +49,22 @@ class Trie {
             char ch = word.charAt(i);
             curr.addChild(ch);
             curr = curr.getChild(ch);
-            curr.size++;            
+            curr.incSize();            
         }
     }
     public boolean find(String word) {
-        
+        TrieNode curr = root;
+        TrieNode node;
+        char ch = ' ';
+        for(int i = 0; i < word.length(); i++) {
+            ch = word.charAt(i);
+            node = curr.getChild(ch);
+            if(node == null) {
+                return false;
+            }
+            curr = node;            
+        }
+            return curr.getIsWord();
     }
   }
 }
