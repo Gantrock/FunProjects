@@ -4,13 +4,13 @@ import java.io.UnsupportedEncodingException;
 public class NGramTester {
 
 	public static void main(String[] args) {
-		Problem1 prob = new Problem1();
-		Problem2 prob2 = new Problem2();
-		Problem3 prob3 = new Problem3();
+		Unigram one = new unigram();
+		Bigram two = new Bigram();
+		Smoothed plusDelta = new Smoothed();
 		try {
-			prob.problem1();
-			prob2.problem2();
-			prob3.problem3();
+			one.probabilities();
+			two.probabilities();
+			plusDelta.probabilities();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
