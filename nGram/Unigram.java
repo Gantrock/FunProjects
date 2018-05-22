@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Problem1 {
+public class Unigram {
 	Map<String, Double> count = new HashMap<String, Double>();
 	Map<String, Double> prob = new HashMap<String, Double>();
 	
