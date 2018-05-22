@@ -13,11 +13,11 @@ public class Bigram {
 	Map<String, Double> prob = new HashMap<String, Double>();
 	Map<String, HashMap<String, Double>> probFind = new HashMap<String, HashMap<String, Double>>();
 	
-	public int problem2() throws FileNotFoundException, UnsupportedEncodingException {
+	public int problem2(String fileName, String secFileName) throws FileNotFoundException, UnsupportedEncodingException {
 		double tempNum = 0.0;
 		HashMap<String, Double> tempMap = new HashMap<String,Double>();
 		String secKey = "";
-		File toRead = new File("doyle-27.txt");
+		File toRead = new File(fileName);
 		Scanner fileRead = new Scanner(toRead);
 		String line = "";
 		if(fileRead.hasNext())
@@ -27,15 +27,11 @@ public class Bigram {
 			if(count.containsKey(line)) {
 				if(count.get(line).containsKey(secKey)) {
 					tempNum = count.get(line).get(secKey) + 1.0;
-					//tempMap = count.get(line);
-					//tempMap.put(secKey, tempNum);
 					count.get(line).put(secKey, tempNum);
 				} else {
-					//tempMap = new HashMap<String, Double>();
-					//tempMap.put(secKey, 1.0);
 					count.get(line).put(secKey, 1.0);
 				}
-				//count.put(line, count.get(line) + 1.0);
+
 			} else {
 				tempMap = new HashMap<String, Double>();
 				tempMap.put(secKey, 1.0);
@@ -79,7 +75,7 @@ public class Bigram {
 		double sentLen = 0;
 		String targetWord = "";
 		String prevWord = "";
-		File toCalc = new File("doyle-case-27.txt");
+		File toCalc = new File(secFileName);
 		PrintWriter probWriter = new PrintWriter("bigram_eval.txt", "UTF-8");
 		Scanner fileCalc = new Scanner(toCalc);
 			while(fileCalc.hasNextLine() && sentences<=100) {
