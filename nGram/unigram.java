@@ -10,10 +10,7 @@ public class Problem1 {
 	Map<String, Double> count = new HashMap<String, Double>();
 	Map<String, Double> prob = new HashMap<String, Double>();
 	
-	public int probabilities() throws FileNotFoundException, UnsupportedEncodingException {
-		//Change these two if a different file is desired.
-		String fileName = "doyle-27.txt";
-		String secFileName = "doyle-case-27.txt";
+	public int probabilities(String filename, String secFileName) throws FileNotFoundException, UnsupportedEncodingException {
 		int numWords = 0;
 		double tempNum = 0.0;
 		File toRead = new File(filename);
