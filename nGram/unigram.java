@@ -10,10 +10,13 @@ public class Problem1 {
 	Map<String, Double> count = new HashMap<String, Double>();
 	Map<String, Double> prob = new HashMap<String, Double>();
 	
-	public int problem1() throws FileNotFoundException, UnsupportedEncodingException {
+	public int probabilities() throws FileNotFoundException, UnsupportedEncodingException {
+		//Change these two if a different file is desired.
+		String fileName = "doyle-27.txt";
+		String secFileName = "doyle-case-27.txt";
 		int numWords = 0;
 		double tempNum = 0.0;
-		File toRead = new File("doyle-27.txt");
+		File toRead = new File(filename);
 		Scanner fileRead = new Scanner(toRead);
 		String line = "";
 		while(fileRead.hasNext()) {
@@ -43,7 +46,7 @@ public class Problem1 {
 		double sentProb = 1;
 		double sentLen = 0;
 		String targetWord = "";
-		File toCalc = new File("doyle-case-27.txt");
+		File toCalc = new File(secFileName);
 		PrintWriter probWriter = new PrintWriter("unigram_eval.txt", "UTF-8");
 		Scanner fileCalc = new Scanner(toCalc);
 		while(fileCalc.hasNextLine() && sentences<=100) {
