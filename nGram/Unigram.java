@@ -7,32 +7,37 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Unigram {
-	Map<String, Double> count = new HashMap<String, Double>();
+	//These are Instance variables so that they can be used with the toString() method as well as probabilities().
+	Map<String, Double> dictionary = new HashMap<String, Double>();
 	Map<String, Double> prob = new HashMap<String, Double>();
 	
 	public int probabilities(String filename, String secFileName) throws FileNotFoundException, UnsupportedEncodingException {
+		//the total number of words read.
 		int numWords = 0;
 		double tempNum = 0.0;
 		File toRead = new File(filename);
 		Scanner fileRead = new Scanner(toRead);
 		String line = "";
+		//read every word from File
 		while(fileRead.hasNext()) {
 			numWords++;
 			line = fileRead.next().toLowerCase();
-			if(count.containsKey(line)) {
-				count.put(line, count.get(line) + 1.0);
+			if(dictionary.containsKey(line)) {
+				dictionary.put(line, dictionary.get(line) + 1.0);
 			} else {
-				count.put(line, 1.0);
+				dictionary.put(line, 1.0);
 			}
 			
 		}
 		fileRead.close();
-		for(String key : count.keySet()) {
-			tempNum = count.get(key) / numWords;
+		//for each through the dictionary and add it to the prob Hashmap
+		for(String key : dictionary.keySet()) {
+			tempNum = dictionary.get(key) / numWords;
 			prob.put(key, tempNum);
 		}
 		PrintWriter write = new PrintWriter("unigram_probs.txt", "UTF-8");
 		write.write("Key \t Probability\r\n");
+		//iterate through the prob Hashmap and print each key, pair on a newline.
 		for(String key : prob.keySet()) {
 			write.write(key + " \t" + prob.get(key) + "\r\n");
 		}
@@ -46,6 +51,7 @@ public class Unigram {
 		File toCalc = new File(secFileName);
 		PrintWriter probWriter = new PrintWriter("unigram_eval.txt", "UTF-8");
 		Scanner fileCalc = new Scanner(toCalc);
+		//The second file has capital letters and they need to be removed. This loop also prints 100 random sentences and their data to a file.
 		while(fileCalc.hasNextLine() && sentences<=100) {
 			sentLen = 0.0;
 			line = fileCalc.nextLine();
@@ -84,8 +90,8 @@ public class Unigram {
 	public String toString() {
 		String out = "";
 		out += "key \t count\n";
-		for(String key: count.keySet()) {
-			out += key + " \t" + count.get(key) + "\r\n";
+		for(String key: dictionary.keySet()) {
+			out += key + " \t" + dictionary.get(key) + "\r\n";
 		}
 		return out;
 	}
