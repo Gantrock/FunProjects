@@ -4,26 +4,36 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class Transition {
-
+	//transition table
 	HashMap <String, double[]> tTable = new HashMap<String, double[]>();
+	//The previous String tested if applicable.
 	String prev = "";
+	//total values of each part-of-speech tag.
 	double noun = 0.1;
 	double verb = 0.1;
 	double conj = 0.1;
 	double pro = 0.1;
 	
+	/**
+	 * Single parameter constructor.
+	 * @param filename
+	 */
 	public Transition(String filename){
 		buildTable(filename);
 	}
 	
+	/**
+	 * Builds the table using the provided text file.
+	 * @param filename
+	 */
 	public void buildTable(String filename) {
-		String type = "";
 		String line = "";
 
 		File toRead = new File(filename);
 		Scanner reader;
 		try {
 			reader = new Scanner(toRead);
+			//The training file is checked line by line, the first tag for a line is always start.
 			while(reader.hasNextLine()) {
 				line = reader.nextLine();
 				line = add("START", line);
@@ -35,6 +45,7 @@ public class Transition {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		//Displays the table
 		System.out.println("\t\tNOUN\tVERB\tCONJ\tPRO\t#");
 		for(String key : tTable.keySet()) {
 			System.out.println(key + "\t\t" + tTable.get(key)[0] + "\t" + tTable.get(key)[1] + "\t" + tTable.get(key)[2] + "\t" + tTable.get(key)[3] + "\t" + tTable.get(key)[4]);
@@ -47,6 +58,7 @@ public class Transition {
  		String type = "";
 		int slashFind = 0;
 		int spaceFind = 0;
+		//Iterates through every word/part-of-speech tag pairing.
 		if(line.contains("/")) {
 			slashFind = line.indexOf("/");
 			if(line.contains(" ")) {
@@ -73,6 +85,11 @@ public class Transition {
 		}
 		return line;
 	}
+	/**
+	 * Adds a part-of-speech tag to the table
+	 * @param theWord the String indicating the previous tag or START if the start of the line.
+	 * @param theType the String indicating the current tag
+	 */
 	public void addType(String theWord, String theType) {
 		// N = 1, V = 2, CONJ = 3, PRO = 4
 		switch (theType) {
@@ -96,6 +113,13 @@ public class Transition {
 			System.out.println("Type not found " + theType + " found instead");
 			}
 	}
+	
+	/**
+	 * Returns the probability of a part-of-speech tag(theWord) appearing directly before a tag theType.
+	 * @param theWord
+	 * @param theType
+	 * @return
+	 */
 	public double probT(String theWord, String theType) {
 		double sent = 0.0;
 		switch (theType) {
@@ -114,35 +138,44 @@ public class Transition {
 		}
 		return sent;
 	}
+	/**
+	 * Finds the tag with the highest number of occurrences.
+	 * @param theWord
+	 * @return
+	 */
 	public String maxTag(String theWord) {
 		String tag = "";
 		double max = 0;
-		for(int i = 0; i < 4; i++) {
-			if(tTable.containsKey(theWord)) {
-				if(tTable.get(theWord)[i] > max){
-					max = tTable.get(theWord)[i];
-					if(i == 0) {
-						tag = "N";
-					} else if (i == 1) {
-						tag = "V";
-					} else if (i == 2) {
-						tag = "CONJ";
-					} else if (i == 3) {
-						tag = "PRO";
-					}
-				}
+		/*if the table doesn't contain the theWord pick the highest total 
+		 * part-of-speech tag then add the word to the tTable*/
+		if(!tTable.containsKey(theWord)) {
+			if(noun > verb && noun > conj && noun > pro) {
+				tag = "N";
+			} else if (verb > conj && verb > pro) {
+				tag = "V";
+			} else if (conj > pro) {
+				tag = "CONJ";
 			} else {
-				if(noun > verb && noun > conj && noun > pro) {
-					tag = "N";
-				} else if (verb > conj && verb > pro) {
-					tag = "V";
-				} else if (conj > pro) {
-					tag = "CONJ";
-				} else {
-					tag = "PRO";
-				}
+				tag = "PRO";
 			}
-		}		
+		} else {
+			/*if the table contains theWord iterate through the 
+			 * part-of-speech totals and find the max.*/
+			for(int i = 0; i < 4; i++) {
+					if(tTable.get(theWord)[i] > max){
+						max = tTable.get(theWord)[i];
+						if(i == 0) {
+							tag = "N";
+						} else if (i == 1) {
+							tag = "V";
+						} else if (i == 2) {
+							tag = "CONJ";
+						} else if (i == 3) {
+							tag = "PRO";
+						}
+					}
+			}	
+		}
 		return tag;
 	}
 }
