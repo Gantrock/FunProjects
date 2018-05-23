@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Emission {
 	
-	final double BASE = 0.1;
+	private static final double BASE = 0.1;
 
 	HashMap <String, double[]> eTable = new HashMap<String, double[]>();
 	//All part-of-speech tag counts start with .1 for smoothing. These values represent the total for each tag.
