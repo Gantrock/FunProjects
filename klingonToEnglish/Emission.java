@@ -6,6 +6,7 @@ import java.util.Scanner;
 public class Emission {
 
 	HashMap <String, double[]> eTable = new HashMap<String, double[]>();
+	//All part-of-speech tag counts start with .1 for smoothing.
 	double noun = 0.1;
 	double verb = 0.1;
 	double conj = 0.1;
