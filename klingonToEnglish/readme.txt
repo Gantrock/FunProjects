@@ -12,5 +12,8 @@ The Transition class builds the transition probability table. This table counts 
 
 The Decoding class uses the Viterbi algorithm and the previously generated tables to decode the likely part-of-speech tags of each word in the target sentence.
 
-These four classes could be expanded further to better translate phrases. You could add a class to generate a word to english table and go from there to better have an estimate of the possible meanings, or at least the possible words used in the sentence. 
+Possible improvements:
+These four classes could be expanded further to better translate phrases. You could add a class to generate a word to english table and go from there to better have an estimate of the possible meanings, or at least the possible words used in the sentence.
+
+The Emission and Transition table share enough methodsand functions that they would probably be better built inheriting from a class. Likely one called ProbTable.
 
