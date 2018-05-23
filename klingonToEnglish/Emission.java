@@ -4,22 +4,33 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class Emission {
+	
+	final double BASE = 0.1;
 
 	HashMap <String, double[]> eTable = new HashMap<String, double[]>();
-	//All part-of-speech tag counts start with .1 for smoothing.
+	//All part-of-speech tag counts start with .1 for smoothing. These values represent the total for each tag.
 	double noun = 0.1;
 	double verb = 0.1;
 	double conj = 0.1;
 	double pro = 0.1;
 	
+	/**
+	 * The one parameter constructor for an Emission table.
+	 * @param filename
+	 */
 	public Emission(String filename){
 		buildTable(filename);
 	}
 	
+	/**
+	 * Takes a file pointing to a training file and creates the table.
+	 * @param filename is the name of the traning file
+	 */
 	public void buildTable(String filename) {
 		String tuple = "";
 		String type = "";
 		String word = "";
+		//the index of a space to be used in parsing the training data.
 		int slashFind = 0;
 		File toRead = new File(filename);
 		Scanner reader;
@@ -32,14 +43,18 @@ public class Emission {
 					//System.out.println("Word " + tuple + " " + slashFind);
 					word = tuple.substring(0, slashFind);
 					type = tuple.substring(slashFind+1);
+					//if the table contains a word add it as a key and it's part-of-speech tag.
 					if(eTable.containsKey(word)) {
+						//adds the word to the table and increments it's type count.
 						addType(word, type);							
 					} else {
+						/*If the word is new, creates a double array of size 4.
+						 * after adding it each index is filled with the base value */
 						eTable.put(word, new double[4]);
-						eTable.get(word)[0] += 0.1;
-						eTable.get(word)[1] += 0.1;
-						eTable.get(word)[2] += 0.1;
-						eTable.get(word)[3] += 0.1;
+						eTable.get(word)[0] += BASE;
+						eTable.get(word)[1] += BASE;
+						eTable.get(word)[2] += BASE;
+						eTable.get(word)[3] += BASE;
 						addType(word, type);
 					}
 				}
@@ -48,6 +63,7 @@ public class Emission {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		//Prints the table.
 		System.out.println("\t\tNOUN\tVERB\tCONJ\tPRO");
 		for(String key : eTable.keySet()) {
 			System.out.println(key + "\t\t" + eTable.get(key)[0] + "\t" + eTable.get(key)[1] + "\t" + eTable.get(key)[2] + "\t" + eTable.get(key)[3]);
@@ -55,7 +71,11 @@ public class Emission {
 		System.out.println("Totals\t\t" + noun + "\t" + verb + "\t" + conj + "\t" + pro);
 
 	}
-	
+	/**
+	 * Adds the word to the table and increments the totals for the specificed type.
+	 * @param theWord
+	 * @param theType
+	 */
 	public void addType(String theWord, String theType) {
 		// N = 1, V = 2, CONJ = 3, PRO = 4
 		switch (theType) {
@@ -80,43 +100,59 @@ public class Emission {
 			}
 	}
 	
+	/**
+	 * Finds the highest value tag for the specified word
+	 * @param theWord
+	 * @return returns a String representing a part-of-speech tag.
+	 */
 	public String maxTag(String theWord) {
 		String tag = "";
 		double max = 0;
-		for(int i = 0; i < 4; i++) {
-			if(eTable.containsKey(theWord)) {
-				if(eTable.get(theWord)[i] > max){
-					max = eTable.get(theWord)[i];
-					if(i == 0) {
-						tag = "N";
-					} else if (i == 1) {
-						tag = "V";
-					} else if (i == 2) {
-						tag = "CONJ";
-					} else if (i == 3) {
-						tag = "PRO";
-					}
-				}
+		/*if the table doesn't contain the theWord pick the highest total 
+		 * part-of-speech tag then add the word to the eTable*/
+		if(!eTable.containsKey(theWord)) {
+			if(noun > verb && noun > conj && noun > pro) {
+				tag = "N";
+			} else if (verb > conj && verb > pro) {
+				tag = "V";
+			} else if (conj > pro) {
+				tag = "CONJ";
 			} else {
-				if(noun > verb && noun > conj && noun > pro) {
-					tag = "N";
-				} else if (verb > conj && verb > pro) {
-					tag = "V";
-				} else if (conj > pro) {
-					tag = "CONJ";
-				} else {
-					tag = "PRO";
-				}
-				eTable.put(theWord, new double[4]);
-				eTable.get(theWord)[0] += 0.1;
-				eTable.get(theWord)[1] += 0.1;
-				eTable.get(theWord)[2] += 0.1;
-				eTable.get(theWord)[3] += 0.1;
+				tag = "PRO";
 			}
-		}		
+			eTable.put(theWord, new double[4]);
+			eTable.get(theWord)[0] += BASE;
+			eTable.get(theWord)[1] += BASE;
+			eTable.get(theWord)[2] += BASE;
+			eTable.get(theWord)[3] += BASE;
+		} else {
+			/*if the table contains theWord iterate through the 
+			 * part-of-speech totals and find the max*/
+			for(int i = 0; i < 4; i++) {
+					if(eTable.get(theWord)[i] > max){
+						max = eTable.get(theWord)[i];
+						if(i == 0) {
+							tag = "N";
+						} else if (i == 1) {
+							tag = "V";
+						} else if (i == 2) {
+							tag = "CONJ";
+						} else if (i == 3) {
+							tag = "PRO";
+						}
+					}
+			}	
+		}
+	
 		return tag;
 	}
 	
+	/**
+	 * Returns the probability of theTag in relation to theWord
+	 * @param theWord
+	 * @param theTag
+	 * @return the probability of theWord having theTag
+	 */
 	public double probAtTag(String theWord, String theTag){
 		double probTag = 0.0;
 		if(eTable.containsKey(theWord)) {
@@ -135,27 +171,9 @@ public class Emission {
 				break;
 			}
 		} else {
-			probTag = 0.1;
+			probTag = BASE;
 		}
 		return probTag;
 	}
 	
- 	public double probE(String theWord, String theType) {
-		double sent = 0.0;
-		switch (theType) {
-		case "N":
-			sent = eTable.get(theWord)[0]/noun;
-			break;
-		case "V":
-			sent = eTable.get(theWord)[1]/verb;
-			break;
-		case "CONJ":
-			sent = eTable.get(theWord)[2]/conj;
-			break;
-		case "PRO":
-			sent = eTable.get(theWord)[3]/pro;
-			break;
-		}
-		return sent;
-	}
 }
