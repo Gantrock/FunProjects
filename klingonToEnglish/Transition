@@ -1,0 +1,148 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Scanner;
+
+public class Transition {
+
+	HashMap <String, double[]> tTable = new HashMap<String, double[]>();
+	String prev = "";
+	double noun = 0.1;
+	double verb = 0.1;
+	double conj = 0.1;
+	double pro = 0.1;
+	
+	public Transition(String filename){
+		buildTable(filename);
+	}
+	
+	public void buildTable(String filename) {
+		String type = "";
+		String line = "";
+
+		File toRead = new File(filename);
+		Scanner reader;
+		try {
+			reader = new Scanner(toRead);
+			while(reader.hasNextLine()) {
+				line = reader.nextLine();
+				line = add("START", line);
+				while(!line.isEmpty()) {
+					line = add(prev, line);
+				}				
+			}
+			reader.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		System.out.println("\t\tNOUN\tVERB\tCONJ\tPRO\t#");
+		for(String key : tTable.keySet()) {
+			System.out.println(key + "\t\t" + tTable.get(key)[0] + "\t" + tTable.get(key)[1] + "\t" + tTable.get(key)[2] + "\t" + tTable.get(key)[3] + "\t" + tTable.get(key)[4]);
+		}
+		System.out.println("Totals\t\t" + noun + "\t" + verb + "\t" + conj + "\t" + pro);
+
+	}
+	
+	public String add(String row, String line) {
+ 		String type = "";
+		int slashFind = 0;
+		int spaceFind = 0;
+		if(line.contains("/")) {
+			slashFind = line.indexOf("/");
+			if(line.contains(" ")) {
+				spaceFind = line.indexOf(" ");
+				type = line.substring(slashFind+1, spaceFind);
+				line = line.substring(spaceFind+1);
+			} else {
+				type = line.substring(slashFind+1);
+				line = "";
+			}
+			if(tTable.containsKey(row)) {
+				addType(row, type);
+				tTable.get(row)[4]++;
+			} else {
+				tTable.put(row, new double[5]);
+				tTable.get(row)[0] += 0.1;
+				tTable.get(row)[1] += 0.1;
+				tTable.get(row)[2] += 0.1;
+				tTable.get(row)[3] += 0.1;
+				tTable.get(row)[4] += 1.1;
+				addType(row, type);
+			}
+			prev = type;
+		}
+		return line;
+	}
+	public void addType(String theWord, String theType) {
+		// N = 1, V = 2, CONJ = 3, PRO = 4
+		switch (theType) {
+		case "N":
+			tTable.get(theWord)[0]++;
+			noun++;
+			break;
+		case "V":
+			tTable.get(theWord)[1]++;
+			verb++;
+			break;
+		case "CONJ":
+			tTable.get(theWord)[2]++;
+			conj++;
+			break;
+		case "PRO":
+			tTable.get(theWord)[3]++;
+			pro++;
+			break;
+		default:
+			System.out.println("Type not found " + theType + " found instead");
+			}
+	}
+	public double probT(String theWord, String theType) {
+		double sent = 0.0;
+		switch (theType) {
+		case "N":
+			sent = tTable.get(theWord)[0]/tTable.get(theWord)[4];
+			break;
+		case "V":
+			sent = tTable.get(theWord)[1]/tTable.get(theWord)[4];
+			break;
+		case "CONJ":
+			sent = tTable.get(theWord)[2]/tTable.get(theWord)[4];
+			break;
+		case "PRO":
+			sent = tTable.get(theWord)[3]/tTable.get(theWord)[4];
+			break;
+		}
+		return sent;
+	}
+	public String maxTag(String theWord) {
+		String tag = "";
+		double max = 0;
+		for(int i = 0; i < 4; i++) {
+			if(tTable.containsKey(theWord)) {
+				if(tTable.get(theWord)[i] > max){
+					max = tTable.get(theWord)[i];
+					if(i == 0) {
+						tag = "N";
+					} else if (i == 1) {
+						tag = "V";
+					} else if (i == 2) {
+						tag = "CONJ";
+					} else if (i == 3) {
+						tag = "PRO";
+					}
+				}
+			} else {
+				if(noun > verb && noun > conj && noun > pro) {
+					tag = "N";
+				} else if (verb > conj && verb > pro) {
+					tag = "V";
+				} else if (conj > pro) {
+					tag = "CONJ";
+				} else {
+					tag = "PRO";
+				}
+			}
+		}		
+		return tag;
+	}
+}
