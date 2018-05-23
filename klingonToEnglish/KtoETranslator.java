@@ -11,6 +11,7 @@ public class KtoEMain {
     //Uses the Emission and Transition tables to decode the phrase.
 		Decoding decoder = new Decoding(eTable, tTable);
 		decoder.decode(target);
+		System.out.println();
 		System.out.println("Complete");
 
 	}
