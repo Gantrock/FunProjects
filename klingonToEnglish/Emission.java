@@ -24,7 +24,7 @@ public class Emission {
 	
 	/**
 	 * Takes a file pointing to a training file and creates the table.
-	 * @param filename is the name of the traning file
+	 * @param filename is the name of the training file
 	 */
 	public void buildTable(String filename) {
 		String tuple = "";
@@ -48,13 +48,14 @@ public class Emission {
 						//adds the word to the table and increments it's type count.
 						addType(word, type);							
 					} else {
-						/*If the word is new, creates a double array of size 4.
+						/*If the word is new, creates a double array of size 5.
 						 * after adding it each index is filled with the base value */
-						eTable.put(word, new double[4]);
+						eTable.put(word, new double[5]);
 						eTable.get(word)[0] += BASE;
 						eTable.get(word)[1] += BASE;
 						eTable.get(word)[2] += BASE;
 						eTable.get(word)[3] += BASE;
+						eTable.get(word)[4] += 4 * BASE;
 						addType(word, type);
 					}
 				}
@@ -97,7 +98,10 @@ public class Emission {
 			break;
 		default:
 			System.out.println("Type not found " + theType + " found instead");
+			eTable.get(theWord)[4]--;
 			}
+		//if this method is reached we have a word (or an error in types for the training set)
+		eTable.get(theWord)[4]++;
 	}
 	
 	/**
@@ -120,14 +124,16 @@ public class Emission {
 			} else {
 				tag = "PRO";
 			}
-			eTable.put(theWord, new double[4]);
+			eTable.put(theWord, new double[5]);
 			eTable.get(theWord)[0] += BASE;
 			eTable.get(theWord)[1] += BASE;
 			eTable.get(theWord)[2] += BASE;
 			eTable.get(theWord)[3] += BASE;
+			eTable.get(theWord)[4] += 4 * BASE;
 		} else {
 			/*if the table contains theWord iterate through the 
-			 * part-of-speech totals and find the max*/
+			 * part-of-speech totals and find the max. We only go up to four
+			 * because the fifth index contains the total.*/
 			for(int i = 0; i < 4; i++) {
 					if(eTable.get(theWord)[i] > max){
 						max = eTable.get(theWord)[i];
@@ -170,9 +176,11 @@ public class Emission {
 				probTag = eTable.get(theWord)[3];
 				break;
 			}
+			probTag = probTag / eTable.get(theWord)[4];
 		} else {
 			probTag = BASE;
 		}
+		
 		return probTag;
 	}
 	
